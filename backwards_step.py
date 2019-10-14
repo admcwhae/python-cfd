@@ -1,15 +1,18 @@
 import numpy as np
+import matplotlib.pyplot as plot
+from matplotlib import cm
+import time 
 
-
+starttime = time.time()
 
 centred = 0
 
 # number of cells 
-nx = 50 
-ny = 50
+nx = 25 
+ny = 25
 
 # reynolds number 
-re = 100.0
+re = 400.0
 
 # domain size 
 xlen = 30.0 
@@ -42,6 +45,7 @@ y = np.zeros((nx + 1, ny + 1))
 u = np.zeros((nx + 1, ny + 1))
 v = np.zeros((nx + 1, ny + 1))
 c = 0
+
 # SET UP INITIAL CONDITIONS
 for i in range(0, nx + 1):
     for j in range(0, ny + 1):
@@ -60,7 +64,8 @@ for i in range(0, nx + 1):
             u[i][j] = -0.75 * yy**2 + 1.5 * yy
     psi[i][ny] = 1.0       
 
-
+setuptime = time.time() - starttime
+print('Setuptime took: {:.3f} microseconds'.format(setuptime * 1000))
 # SOLVING LOOP
 
 for k in range(1, 100000):
@@ -186,5 +191,30 @@ for k in range(1, 100000):
     if(adu < eps_psi and adv < eps_omega):
         break
 
+    # if(k == 1):
+    #     break
+
 print('Solution reached after {} iterations'.format(k))
 
+timetaken = time.time() - starttime
+
+print('Timetaken to get solution was {:.3f} seconds.'.format(timetaken))
+
+plot.figure('Streamfunction')
+plot.contourf(x, y, psi, 20, cmap=cm.inferno)
+plot.colorbar()
+plot.xlim(0, 10)
+plot.title('Streamfunction')
+# plot.contour(x, y, psi, cmap=cm.viridis)
+# plot.quiver(x, y, u, v) 
+plot.streamplot(x[:, 0], y[0, :], u, v)
+plot.xlabel('x')
+plot.ylabel('y')
+plot.show()
+
+# plot.figure('Streamfunction')
+# plot.contourf(x, y, psi)
+# plot.title('Streamfunction')
+# plot.xlabel('x')
+# plot.ylabel('y')
+# plot.show()
